@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+    --color-customBlue1: #AAC7FF;
+    --color-customBlue2: #739CE3;
+    --color-customBlue3: #FAD8FD;
+    --color-customDarkBlue1: #26509A;
+    --color-customDarkBlue2: #0A305F;
+    --color-customDarkBlue3: #144787;
+    --color-customDarkBlue4: #064AA2;
+    --color-placeholderColor: #D9D9D9;
+    --color-darkerWhite: #F9F9F9;
+
+    --color-customGradient1: linear-gradient(212deg, #26509A 13%, #739CE3 45%, #AAC7FF 58%, #AAC7FF 100%);
+    --color-customGradient2: linear-gradient(51deg, #558AF2 0%, #78A5FC 19%, #8EB3F9 50%, #B4CDFE 82%, #C1D6FF 100%);
+    --color-customGradient3: linear-gradient(to right, #1564C5 0%, #2D5E9B 40%, #144787 70%, #0A305F 100%);
+    --color-customGradient4: linear-gradient(to right, #1B78EA 0%, #3771BA 40%, #195BAC 70%, #0F468B 100%);
+    --color-customGradient5: linear-gradient(to right, #0A305F 0%, #114186 36%, #22529D 62%, #3A67B8 100%);
+    --color-customGradient6: linear-gradient(to right, #0C6BE0 0%, #0D5EC2 25%, #0C56B0 50%, #0B4389 75%, #0A305F 100%);
+    --color-customGradient7: linear-gradient(339deg, #1564C5 0%, #2D5E9B 40%, #144787 70%, #0A305F 100%);
+    --color-customGradient8: linear-gradient(to right, #376CC7 0%, #739CE3 25%, #91B5F9 83%, #CCDDFF 100%);
+    
+    --font-lexendReg: lexendReg, sans-serif;
+    --font-lexendBold: lexendBold, sans-serif;
+    --font-patuaOneReg: patuaOne, sans-serif;
+}
+
+@font-face {
+    font-family: 'lexendReg';
+    src: url('./assets/fonts/Lexend-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'lexendBold';
+    src: url('./assets/fonts/Lexend-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'patuaOne';
+    src: url('./assets/fonts/PatuaOne-Regular.ttf');
+}
