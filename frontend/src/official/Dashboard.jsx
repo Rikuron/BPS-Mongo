@@ -290,7 +290,10 @@ const Dashboard = () => {
                       <div className="ml-4">
                         <p className="font-lexendReg text-md">{event.eventTitle}</p>
                         <p className="font-lexendReg text-gray-400 text-sm">
-                          {event.date.split('T')[0]} at {event.time} | {event.location}
+                          {event.date.split('T')[0]}
+                        </p>
+                        <p className="font-lexendReg text-gray-400 text-xs">
+                          {event.time} | {event.location}
                         </p>
                       </div>
                     </div>

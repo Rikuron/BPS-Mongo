@@ -1,5 +1,6 @@
 const Staff = require('../models/Staff');
 const config = require('../config/config');
+const { v4: uuidv4 } = require('uuid');
 
 // Create a new staff member | POST
 exports.createStaff = async (req, res) => {
@@ -46,6 +47,9 @@ exports.createStaff = async (req, res) => {
         // Determine if the user is an admin
         const isAdmin = password === config.ADMIN_KEY;
 
+        // Generate QR secret
+        const qrSecret = uuidv4();
+
         // Create new staff member
         const newStaff = await Staff.create({
             staffId,
@@ -55,12 +59,14 @@ exports.createStaff = async (req, res) => {
             email: email.toLowerCase(),
             username,
             password,
-            isAdmin
+            isAdmin,
+            qrSecret
         });
 
         // Exclude password from response
         const staffResponse = newStaff.toObject();
         delete staffResponse.password;
+        staffResponse.qrSecret = qrSecret;
 
         res.status(201).json({
             success: true,

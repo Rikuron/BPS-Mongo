@@ -39,10 +39,30 @@ const staffSchema = new mongoose.Schema({
       isAdmin: {
         type: Boolean,
         default: false
+      },
+      qrSecret: {
+        type: String,
+        unique: true,
+        sparse: true
       }
 }, {
     timestamps: true,
 });
+
+// Method to compare passwords
+staffSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Static method to find by username
+staffSchema.statics.findByUsername = async function(username) {
+  return this.findOne({ username });
+};
+
+// Static method to find admins
+staffSchema.statics.findAdmins = async function() {
+  return this.find({ isAdmin: true });
+};
 
 // Pre-save middleware to hash password
 staffSchema.pre('save', async function(next) {
@@ -56,21 +76,6 @@ staffSchema.pre('save', async function(next) {
         next(error);
     }
 });
-
-// Method to compare passwords
-staffSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
-
-// Static method to find by username
-staffSchema.statics.findByUsername = async function(username) {
-    return this.findOne({ username });
-};
-
-// Static method to find admins
-staffSchema.statics.findAdmins = async function() {
-    return this.find({ isAdmin: true });
-};
 
 const Staff = mongoose.model('Staff', staffSchema);
 

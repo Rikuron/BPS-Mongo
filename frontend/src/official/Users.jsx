@@ -5,6 +5,7 @@ import { FaPlus, FaEdit } from "react-icons/fa";
 import { RiSearchEyeLine, RiDeleteBin5Fill } from "react-icons/ri";
 import axios from 'axios'; 
 import { API_ENDPOINTS } from '../config/api';
+import QRCode from 'react-qr-code';
 
 const Users = () => {
   const [staffId, setStaffId] = useState('');
@@ -14,6 +15,9 @@ const Users = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrSecret, setQrSecret] = useState('');
+  const [qrModalUsername, setQrModalUsername] = useState('');
 
   const [staff, setStaff] = useState([]);
   const [filteredStaff, setFilteredStaff] = useState([]);
@@ -116,8 +120,14 @@ const Users = () => {
         await axios.put(`${API_ENDPOINTS.STAFF}/${staffId}`, staffData, { headers });
         alert('Staff member updated successfully');
       } else {
-        await axios.post(API_ENDPOINTS.STAFF, staffData, { headers });
+        const response = await axios.post(API_ENDPOINTS.STAFF, staffData, { headers });
         alert('Staff member added successfully');
+
+        if (response.data && response.data.data && response.data.data.qrSecret) {
+          setQrSecret(response.data.data.qrSecret);
+          setQrModalUsername(response.data.data.username);
+          setShowQrModal(true);
+        }
       }
 
       resetForm();
@@ -134,6 +144,11 @@ const Users = () => {
       }
     }
   };
+
+  const handleCloseQrModal = () => {
+    setShowQrModal(false);
+    setQrSecret('');
+  }
 
   const onSearchInputChange = (e) => {
     const value = e.target.value;
@@ -208,7 +223,7 @@ const Users = () => {
 
   return (
     <div className="flex bg-darkerWhite">
-      {showCard && (
+      {showCard && !showQrModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div ref={cardRef} className="bg-[#F6F6F6] w-[50%] m-auto h-auto px-10 pb-6 pt-10 rounded-lg shadow-[6px_6px_0px_0_rgba(170,199,255,1)]">
             <p className="font-lexendBold text-customDarkBlue2 text-center text-2xl"> 
@@ -309,6 +324,87 @@ const Users = () => {
           </div>
         </div>
       )}
+
+      {showQrModal && !showCard && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-60">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-[400px] flex flex-col items-center">
+            <h2 className="text-xl font-bold mb-4">User QR Code</h2>
+            <QRCode value={qrSecret} size={256} />
+            <div className="mt-6 flex space-x-4">
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
+                onClick={handleCloseQrModal}
+              >
+                Close
+              </button>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                onClick={() => {
+                  // Find the QR code SVG element
+                  const qrCodeElement = document.querySelector('svg');
+                  if (!qrCodeElement) {
+                    console.error('QR Code SVG element not found');
+                    return;
+                  }
+              
+                  // Get the dimensions of the QR code
+                  const svgRect = qrCodeElement.getBoundingClientRect();
+                  const width = svgRect.width;
+                  const height = svgRect.height;
+              
+                  // Create a canvas with the same dimensions
+                  const canvas = document.createElement('canvas');
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d');
+                  
+                  // Fill with white background
+                  ctx.fillStyle = 'white';
+                  ctx.fillRect(0, 0, width, height);
+              
+                  // Convert SVG to string
+                  const svgData = new XMLSerializer().serializeToString(qrCodeElement);
+                  
+                  // Create a Blob from the SVG string
+                  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                  
+                  // Create URL from the Blob
+                  const DOMURL = window.URL || window.webkitURL || window;
+                  const url = DOMURL.createObjectURL(svgBlob);
+                  
+                  // Create an image element to draw on canvas
+                  const img = new Image();
+                  img.src = url;
+                  
+                  // When the image loads, draw it to the canvas and generate download
+                  img.onload = function() {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    DOMURL.revokeObjectURL(url);
+                    
+                    // Convert canvas to data URL
+                    const dataUrl = canvas.toDataURL('image/png');
+                    
+                    // Create a download link
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = dataUrl;
+
+                    // Set the download link's filename
+                    downloadLink.download = `${qrModalUsername}_qr_code.png`;
+                    
+                    // Append, click, and remove the download link
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                  };
+                }}
+              >
+                Download QR Code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <NavBar />
 

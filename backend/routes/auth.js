@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { protect , login , refreshToken , validateToken } = require('../middleware/auth');
+const { loginWithQr } = require('../controllers/authController');
 
 // Login route
 router.post('/login', login);
+
+// Login with QR code route
+router.post('/login-qr', loginWithQr);
 
 // Validate token route
 router.get('/validate', protect, validateToken);
