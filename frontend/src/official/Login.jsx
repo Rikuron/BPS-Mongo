@@ -18,6 +18,7 @@ const Login = () => {
   // State variable for QR login
   const [qrSecret, setQrSecret] = useState('');
   const [showQrScanner, setShowQrScanner] = useState(false);
+  const [isQrProcessing, setIsQrProcessing] = useState(false);
   
   const scannerRef = useRef(null);
   const videoRef = useRef(null);
@@ -60,19 +61,33 @@ const Login = () => {
     }
   };
 
-  const handleQrLogin = async (e) => {
-    if (e) e.preventDefault();
+  const handleQrLogin = async (secretValue = null) => {
+    if (isQrProcessing) return;
+
+    setIsQrProcessing(true);
     setError('');
 
-    if (!qrSecret) {
-      setError('Please scan or enter a QR code secret');
-      return;
-    }
-
     try {
-      const response = await axios.post(`${API_ENDPOINTS.LOGIN}-qr`, { qrSecret });
+      const secretToUse = secretValue || qrSecret;
+
+      if (!secretToUse) {
+        setError('Please scan or enter a QR code secret');
+        setIsQrProcessing(false);
+        return;
+      }
+
+      console.log('Attempting QR login with secret: ', secretToUse);
+
+      const response = await axios.post(
+        `${API_ENDPOINTS.LOGIN}-qr`, 
+        { qrSecret: secretToUse }
+      );
       console.log('QR login response: ', response);
       console.log('QR login response data: ', response.data);
+
+      if (!response.data || !response.data.token) {
+        throw new Error('Invalid QR login response');
+      }
 
       // Save authentication details
       localStorage.setItem('token', response.data.token);
@@ -109,10 +124,9 @@ const Login = () => {
         videoRef.current,
         result => {
           console.log('QR Code scanned: ', result.data);
-          setQrSecret(result.data);
           stopQrScanner();
           setShowQrScanner(false);
-          handleQrLogin();
+          handleQrLogin(result.data);
         },
         {
           returnDetailedScanResult: true,
@@ -172,6 +186,15 @@ const Login = () => {
       stopQrScanner();
     }
   }, []);
+
+  // UseEffect to check if user is already logged in || if token exists on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    // If token exists || already logged in, navigate to dashboard
+    if (token) {
+      navigate('/official/dashboard');
+    }
+  }, [navigate]);
 
   return (
     <div className="relative w-screen h-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${dulag_image})` }}> 
@@ -271,8 +294,9 @@ const Login = () => {
                 type="button"
                 onClick={toggleQrScanner}
                 className="bg-customDarkBlue1 hover:bg-customDarkBlue2 hover:cursor-pointer text-white font-bold py-2 px-4 rounded-lg transition duration-500 ease-in-out"
+                disabled={isQrProcessing}
               >
-                Cancel and return to Login
+                {isQrProcessing ? "Processing..." :"Cancel and return to Login"}
               </button>
             </div>
           </div>
