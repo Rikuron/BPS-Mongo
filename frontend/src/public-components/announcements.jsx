@@ -20,7 +20,15 @@ const Announcements = () => {
         setLoading(true);
         const response = await axios.get(API_ENDPOINTS.ANNOUNCEMENTS);
         const announcementsData = response.data.data || []; 
-        setAnnouncements(announcementsData.slice(0, 3)); // Get the latest 3 announcements
+
+        const sortedAnnouncements = announcementsData.sort((a, b) => {
+          const dateA = a.updatedAt || a.dateTimePosted;
+          const dateB = b.updatedAt || b.dateTimePosted;
+
+          return new Date(dateB) - new Date(dateA);
+        });
+
+        setAnnouncements(sortedAnnouncements.slice(0, 3)); // Get the latest 3 announcements
       } catch (error) {
         console.error('Error fetching announcements:', error.response || error);
         setAnnouncements([]);
