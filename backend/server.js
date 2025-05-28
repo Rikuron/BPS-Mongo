@@ -57,7 +57,7 @@ app.use('/api/staff', staffRoutes);
 app.use('/api/activities', activityRoutes);
 
 // Email route
-// app.use('/api/send-email', emailRoutes);
+app.use('/api/send-email', emailRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

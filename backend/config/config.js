@@ -19,6 +19,7 @@ const config = {
     EMAIL: {
         USER: process.env.EMAIL_USER,
         PASS: process.env.EMAIL_PASS,
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     },
 
     // File Upload Config
