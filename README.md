@@ -24,6 +24,7 @@ This repository contains a full-stack application with separate backend and fron
 - Express
 - MongoDB with Mongoose
 - Authentication with JSON Web Tokens (JWT)
+- Nodemailer for email sending
 - Middleware for security (Helmet), logging (Morgan), CORS, and file uploads (Multer)
 - Environment variables managed with dotenv
 
@@ -47,6 +48,10 @@ This repository contains a full-stack application with separate backend and fron
    PORT=5000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
+   ADMIN_KEY=your_admin_key_for_seeding_admin_user
+   EMAIL_USER=your_email_address_for_sending_emails
+   EMAIL_PASS=your_email_password_or_app_password
+   ADMIN_EMAIL=your_admin_email_address_for_receiving_contact_form_submissions
    NODE_ENV=development
    ```
 
@@ -71,6 +76,7 @@ This repository contains a full-stack application with separate backend and fron
 - `/api/events` - Events calendar
 - `/api/staff` - Staff management
 - `/api/activities` - Activity tracking
+- `/api/send-email` - Handles sending emails from the contact form
 
 Health check endpoint:
 
@@ -121,8 +127,8 @@ GET /api/health
 
 ## Environment Variables
 
-- Backend uses a `.env` file for configuration (MongoDB URI, JWT secret, port, etc.).
-- Frontend configuration can be found in `frontend/src/config/api.js` for API base URLs and other settings.
+- Backend uses a `.env` file for configuration (MongoDB URI, JWT secret, port, email credentials, etc.).
+- Frontend configuration can be found in `frontend/src/config/api.js` for API base URLs. The contact form uses the `/api/send-email` endpoint.
 
 ---
 
